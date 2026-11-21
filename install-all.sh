@@ -27,6 +27,7 @@ log_header() { echo -e "${BOLD}${MAGENTA}$*${NC}"; }
 # Component definitions
 COMPONENTS=(
     "dotfiles|Dotfiles (bash, zsh, starship, git, nvim, micro)|./install.sh"
+    "terminals|Terminal Configs (ghostty, terminator)|./install.sh"
     "fonts|Nerd Fonts (with icursive cursive variants)|./scripts/install-fonts.sh"
     "sync|Auto-Sync Daemon (systemd, monthly push)|./scripts/install-sync.sh"
 )
@@ -38,8 +39,16 @@ check_installed() {
         dotfiles)
             [ -L "$HOME/.bashrc" ] && [ -L "$HOME/.zshrc" ] && [ -L "$HOME/.config/starship.toml" ]
             ;;
+        terminals)
+            [ -L "$HOME/.config/ghostty/config" ] && [ -L "$HOME/.config/terminator/config" ]
+            ;;
         fonts)
-            fc-list | grep -qi -e "nerd" -e "icursive" && return 0 || return 1
+            # Avoid pipefail issues with SIGPIPE from fc-list
+            set +o pipefail
+            /usr/bin/fc-list 2>/dev/null | grep -qi -e "nerd" -e "icursive"
+            local result=$?
+            set -o pipefail
+            return $result
             ;;
         sync)
             systemctl --user is-enabled dotfiles-sync.service &>/dev/null && return 0 || return 1
@@ -130,6 +139,9 @@ interactive_menu() {
                                 *) install_component "$name" "$script" ;;
                             esac
                             ;;
+                        terminals)
+                            install_component "$name" "$script" --terminals-only
+                            ;;
                         fonts)
                             echo "Font install mode:"
                             echo "  1) Interactive selector"
@@ -146,6 +158,15 @@ interactive_menu() {
                             ;;
                         sync)
                             install_component "$name" "$script"
+                            # After sync install, offer to set up GitHub remote
+                            if [ -d "$DOTFILES_DIR/.git" ]; then
+                                local remote_url=$(cd "$DOTFILES_DIR" && git remote get-url origin 2>/dev/null || echo "")
+                                if [ -z "$remote_url" ]; then
+                                    echo
+                                    read -r -p "Set up GitHub remote for auto-push? [Y/n] " setup_gh
+                                    [[ ! "$setup_gh" =~ ^[Nn]$ ]] && bash "$SCRIPTS_DIR/install-sync.sh" --setup-github || true
+                                fi
+                            fi
                             ;;
                     esac
                     
@@ -204,6 +225,19 @@ show_detailed_status() {
     done
     echo
     
+    # Terminals
+    echo -e "${BOLD}Terminals:${NC}"
+    for file in .config/ghostty/config .config/terminator/config .config/terminator/config_cur; do
+        if [ -L "$HOME/$file" ]; then
+            echo -e "  ✅ $file -> $(readlink $HOME/$file)"
+        elif [ -f "$HOME/$file" ]; then
+            echo -e "  ⚠️  $file (file, not symlink)"
+        else
+            echo -e "  ❌ $file (missing)"
+        fi
+    done
+    echo
+    
     # Fonts
     echo -e "${BOLD}Fonts:${NC}"
     fc-list | grep -i "nerd" | sed -E 's/^[^:]+: ([^,]+)(,.*)?$/\1/' | cut -d: -f1 | sort -u | grep -v '^$' | grep -v ':style=' | while read -r font; do
@@ -238,6 +272,9 @@ parse_args() {
         --dotfiles)
             install_component "dotfiles" "install.sh" "${@:2}"
             ;;
+        --terminals)
+            install_component "terminals" "install.sh" "${@:2}"
+            ;;
         --fonts)
             install_component "fonts" "scripts/install-fonts.sh" "${@:2}"
             ;;
@@ -265,6 +302,7 @@ show_help() {
     echo "  (no args)       Interactive menu"
     echo "  --all           Install all components"
     echo "  --dotfiles      Install dotfiles only"
+    echo "  --terminals     Install terminal configs (ghostty, terminator)"
     echo "  --fonts         Install fonts only"
     echo "  --sync          Install sync daemon only"
     echo "  --status        Show detailed status"
@@ -274,6 +312,7 @@ show_help() {
     echo "  $0                    # Interactive menu"
     echo "  $0 --all              # Install everything"
     echo "  $0 --dotfiles --minimal  # Minimal dotfiles install"
+    echo "  $0 --terminals          # Install terminal configs"
     echo "  $0 --fonts -i 0       # Install icursive only"
 }
 

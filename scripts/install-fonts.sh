@@ -108,7 +108,7 @@ install_icursive() {
     mkdir -p "$font_dir"
     mkdir -p "$CACHE_DIR"
     
-    log_info "Downloading icursive-nerd-font (patched fonts with cursive italics)..."
+    log_info "Installing icursive-nerd-font (patched fonts with cursive italics)..."
     
     # Font variants available in the repo
     local variants=(
@@ -125,6 +125,7 @@ install_icursive() {
     )
     
     local downloaded=0
+    local already_exists=0
     for variant in "${variants[@]}"; do
         local variant_dir=$(echo "$variant" | sed 's/ /%20/g')
         local font_files=("Regular" "Bold" "Italic" "Bold Italic")
@@ -136,6 +137,7 @@ install_icursive() {
             local dest_file="$font_dir/${file_name}"
             
             if [ -f "$dest_file" ]; then
+                ((already_exists++))
                 continue
             fi
             
@@ -148,8 +150,13 @@ install_icursive() {
         done
     done
     
-    if [ $downloaded -gt 0 ]; then
-        log_success "Downloaded $downloaded icursive font files to $font_dir"
+    local total=$((downloaded + already_exists))
+    if [ $total -gt 0 ]; then
+        if [ $downloaded -gt 0 ]; then
+            log_success "Downloaded $downloaded new icursive font files ($already_exists already existed)"
+        else
+            log_success "All $already_exists icursive font files already installed"
+        fi
         return 0
     else
         log_error "Failed to download any icursive fonts"
@@ -414,6 +421,50 @@ update_fonts() {
     log_success "Font update complete"
 }
 
+# Install default: icursive + fallback fonts
+install_default() {
+    log_info "Installing default font stack: icursive (cursive) + fallback fonts"
+    echo
+    
+    # First install icursive
+    log_info "Step 1: Installing icursive-nerd-font (cursive italics)..."
+    if ! install_icursive; then
+        log_error "Failed to install icursive"
+        return 1
+    fi
+    
+    echo
+    log_info "Step 2: Select fallback fonts (for terminals that don't support cursive)..."
+    echo "Select 2-3 fallback fonts (comma-separated):"
+    echo
+    
+    # Show fallback options
+    local i=1
+    for font_entry in "${FONTS[@]}"; do
+        IFS='|' read -r key path name italic desc <<< "$font_entry"
+        local italic_mark=""
+        [ "$italic" = "true" ] && italic_mark=" ${YELLOW}[italic]${NC}"
+        echo -e "${CYAN}$i)${NC} $name$italic_mark - $desc"
+        ((i++))
+    done
+    echo
+    
+    log_prompt "Select fallback fonts (e.g., 1,2,3) [default: 2,3]: "
+    read -r fallback_input
+    fallback_input="${fallback_input:-2,3}"
+    
+    SELECTED_FONTS=("icursive")
+    IFS=',' read -ra choices <<< "$fallback_input"
+    for choice in "${choices[@]}"; do
+        choice=$(echo "$choice" | xargs)
+        if [[ "$choice" =~ ^[0-9]+$ ]] && [ "$choice" -ge 1 ] && [ "$choice" -le ${#FONTS[@]} ]; then
+            SELECTED_FONTS+=("${FONTS[$((choice-1))]}")
+        fi
+    done
+    
+    install_selected
+}
+
 # Main
 main() {
     case "${1:-}" in
@@ -426,7 +477,6 @@ main() {
             ;;
         --preview|-p)
             if [ -n "${2:-}" ]; then
-                # Find font by number
                 if [ "$2" = "0" ]; then
                     show_preview "icursive-nerd-font"
                 elif [[ "$2" =~ ^[0-9]+$ ]] && [ "$2" -ge 1 ] && [ "$2" -le ${#FONTS[@]} ]; then
@@ -441,7 +491,6 @@ main() {
             ;;
         --install|-i)
             if [ -n "${2:-}" ]; then
-                # Non-interactive install
                 SELECTED_FONTS=()
                 IFS=',' read -ra choices <<< "$2"
                 for choice in "${choices[@]}"; do
@@ -461,12 +510,17 @@ main() {
                 fi
             fi
             ;;
-        --help|-h|"")
+        --default|-d)
+            check_deps || exit 1
+            install_default
+            ;;
+        --help|-h)
             echo "Usage: $0 [command] [options]"
             echo
             echo "Commands:"
             echo "  (no args)        Interactive font selector with preview"
             echo "  -i, --install    Install fonts (interactive or comma-separated list)"
+            echo "  -d, --default    Install icursive (cursive) + fallback fonts"
             echo "  -l, --list       List currently installed Nerd Fonts"
             echo "  -u, --update     Update all installed fonts to latest version"
             echo "  -p, --preview N  Preview font by number (0 = icursive)"
@@ -474,6 +528,7 @@ main() {
             echo
             echo "Examples:"
             echo "  $0                      # Interactive mode"
+            echo "  $0 -d                   # Default: icursive + fallback fonts"
             echo "  $0 -i 1,3,5            # Install MesloLGS, FiraCode, SourceCodePro"
             echo "  $0 -i 0                # Install icursive only"
             echo "  $0 -p 2                # Preview JetBrainsMono"

@@ -1,0 +1,27 @@
+# aesthetics
+background-opacity = 0.72
+background-blur=22
+background=#000000
+foreground=#cdd6f4
+
+# typography - icursive fonts as default with cursive italics
+font-family = "Meslo iCursive S12"
+font-style-italic = "Meslo iCursive S12 Italic"
+font-size=16
+font-thicken=true
+font-thicken-strength=1
+adjust-cell-height=1
+
+#copy on select
+scrollback-limit = 100000
+copy-on-select = clipboard
+mouse-hide-while-typing = true
+command = /usr/bin/zsh
+fullscreen=false
+window-decoration = false
+
+#custom shaders
+#custom-shader = ~/.config/ghostty/shaders/spotlight.glsl
+
+#links
+link-url = true

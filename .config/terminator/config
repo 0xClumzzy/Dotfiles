@@ -1,0 +1,38 @@
+[global_config]
+  focus = mouse
+  handle_size = 6
+  geometry_hinting = True
+  window_state = maximise
+  scroll_tabbar = True
+  sticky = True
+  clear_select_on_copy = True
+[keybindings]
+[profiles]
+  [[default]]
+    background_color = "#0f090e"
+    background_darkness = 0.9
+    background_type = transparent
+    cursor_fg_color = "#69675e"
+    cursor_bg_color = "#3c3836"
+    cursor_color_default = False
+    font = Meslo iCursive S12 14
+    foreground_color = "#676534"
+    palette = "#282828:#cc241d:#98971a:#d79921:#b16286:#b16286:#689d6a:#a89984:#928374:#fb4934:#b8bb26:#fabd2f:#83a598:#d3869b:#8ec07c:#ebdbb2"
+    use_system_font = False
+    bold_is_bright = True
+    copy_on_selection = True
+    title_transmit_fg_color = "#b5835a"
+    title_transmit_bg_color = "#5e5c64"
+    title_receive_fg_color = "#77767b"
+    title_receive_bg_color = "#dc8add"
+    title_inactive_fg_color = "#ebdbb2"
+    title_inactive_bg_color = "#77767b"
+[layouts]
+  [[default]]
+    [[[window0]]]
+      type = Window
+      parent = ""
+    [[[child1]]]
+      type = Terminal
+      parent = window0
+[plugins]

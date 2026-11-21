@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Dotfiles installation script
-# Usage: ./install.sh [--force] [--minimal] [--non-interactive]
+# Usage: ./install.sh [--force] [--minimal] [--non-interactive] [--terminals-only]
 
 set -euo pipefail
 
@@ -11,6 +11,7 @@ BACKUP_DIR="$HOME/.config.backup.$(date +%Y%m%d_%H%M%S)"
 FORCE=false
 MINIMAL=false
 NON_INTERACTIVE=false
+TERMINALS_ONLY=false
 
 # Parse arguments
 for arg in "$@"; do
@@ -18,11 +19,13 @@ for arg in "$@"; do
         --force) FORCE=true ;;
         --minimal) MINIMAL=true ;;
         --non-interactive) NON_INTERACTIVE=true ;;
+        --terminals-only) TERMINALS_ONLY=true ;;
         --help)
-            echo "Usage: ./install.sh [--force] [--minimal] [--non-interactive]"
+            echo "Usage: ./install.sh [--force] [--minimal] [--non-interactive] [--terminals-only]"
             echo "  --force           Overwrite existing configs without prompting"
             echo "  --minimal         Install only shell configs (bash, zsh, starship)"
             echo "  --non-interactive Skip interactive prompts (use defaults/env vars)"
+            echo "  --terminals-only  Install only terminal configs (ghostty, terminator)"
             exit 0
             ;;
     esac
@@ -180,6 +183,30 @@ setup_git_config() {
 
 # Install shell configurations
 install_shell() {
+    # If terminals-only mode, only install terminal configs
+    if [ "$TERMINALS_ONLY" = true ]; then
+        log_info "Installing terminal configurations only..."
+        
+        # Ghostty
+        if [ -d "$DOTFILES_DIR/.config/ghostty" ]; then
+            mkdir -p "$CONFIG_DIR/ghostty"
+            for file in "$DOTFILES_DIR/.config/ghostty/"*; do
+                [ -f "$file" ] && link_config "$file" "$CONFIG_DIR/ghostty/$(basename "$file")"
+            done
+        fi
+        
+        # Terminator
+        if [ -d "$DOTFILES_DIR/.config/terminator" ]; then
+            mkdir -p "$CONFIG_DIR/terminator"
+            for file in "$DOTFILES_DIR/.config/terminator/"*; do
+                [ -f "$file" ] && link_config "$file" "$CONFIG_DIR/terminator/$(basename "$file")"
+            done
+        fi
+        
+        log_success "Terminal configurations installed"
+        return 0
+    fi
+    
     log_info "Installing shell configurations..."
 
     # Bash
@@ -194,6 +221,25 @@ install_shell() {
     # Starship
     mkdir -p "$CONFIG_DIR"
     link_config "$DOTFILES_DIR/.config/starship/starship.toml" "$CONFIG_DIR/starship.toml"
+
+    # Terminal configs
+    log_info "Installing terminal configurations..."
+    
+    # Ghostty
+    if [ -d "$DOTFILES_DIR/.config/ghostty" ]; then
+        mkdir -p "$CONFIG_DIR/ghostty"
+        for file in "$DOTFILES_DIR/.config/ghostty/"*; do
+            [ -f "$file" ] && link_config "$file" "$CONFIG_DIR/ghostty/$(basename "$file")"
+        done
+    fi
+    
+    # Terminator
+    if [ -d "$DOTFILES_DIR/.config/terminator" ]; then
+        mkdir -p "$CONFIG_DIR/terminator"
+        for file in "$DOTFILES_DIR/.config/terminator/"*; do
+            [ -f "$file" ] && link_config "$file" "$CONFIG_DIR/terminator/$(basename "$file")"
+        done
+    fi
 
     # Git (interactive)
     setup_git_config
@@ -307,6 +353,12 @@ main() {
 
     # Create config directory
     mkdir -p "$CONFIG_DIR"
+
+    if [ "$TERMINALS_ONLY" = true ]; then
+        install_shell
+        log_success "Terminal configurations installed!"
+        return 0
+    fi
 
     install_shell
     install_nvim

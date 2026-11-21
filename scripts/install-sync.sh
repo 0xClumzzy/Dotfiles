@@ -96,12 +96,90 @@ setup_config() {
         local remote_url=$(cd "$DOTFILES_DIR" && git remote get-url origin 2>/dev/null || echo "")
         if [ -n "$remote_url" ]; then
             log_info "Detected git remote: $remote_url"
+        else
+            # Prompt for GitHub credentials to set up remote
+            setup_github_remote
         fi
     fi
 }
 
+# Setup GitHub remote with credentials
+setup_github_remote() {
+    echo
+    log_prompt "=== GitHub Remote Setup ==="
+    echo "To enable monthly push to GitHub, we need to set up a remote."
+    echo "You can use either SSH (recommended) or HTTPS with a Personal Access Token."
+    echo
+    
+    read -r -p "Set up GitHub remote now? [Y/n] " setup_remote
+    [[ "$setup_remote" =~ ^[Nn]$ ]] && { log_info "Skipping GitHub remote setup"; return 0; }
+    
+    echo
+    echo "Choose method:"
+    echo "  1) SSH (recommended) - git@github.com:username/repo.git"
+    echo "  2) HTTPS with Personal Access Token - https://github.com/username/repo.git"
+    echo
+    read -r -p "Select [1-2] (default: 1): " method
+    method="${method:-1}"
+    
+    read -r -p "GitHub username: " gh_user
+    [ -z "$gh_user" ] && { log_error "Username required"; return 1; }
+    
+    read -r -p "Repository name (default: dotfiles): " gh_repo
+    gh_repo="${gh_repo:-dotfiles}"
+    
+    local remote_url=""
+    if [ "$method" = "1" ]; then
+        # SSH
+        remote_url="git@github.com:${gh_user}/${gh_repo}.git"
+        log_info "Using SSH remote: $remote_url"
+        log_warn "Make sure you have added your SSH key to GitHub!"
+        log_warn "Run: cat ~/.ssh/id_ed25519.pub (or id_rsa.pub) and add to GitHub Settings > SSH Keys"
+    else
+        # HTTPS with PAT
+        echo
+        log_prompt "Enter GitHub Personal Access Token (input hidden): "
+        read -rs gh_token
+        echo
+        [ -z "$gh_token" ] && { log_error "Token required for HTTPS"; return 1; }
+        remote_url="https://${gh_user}:${gh_token}@github.com/${gh_user}/${gh_repo}.git"
+        log_info "Using HTTPS remote with token"
+    fi
+    
+    # Add remote
+    cd "$DOTFILES_DIR"
+    if git remote add origin "$remote_url" 2>/dev/null; then
+        log_success "Added remote 'origin': $remote_url"
+    else
+        log_warn "Remote 'origin' already exists, updating..."
+        git remote set-url origin "$remote_url"
+        log_success "Updated remote 'origin': $remote_url"
+    fi
+    
+    # Test connection
+    log_info "Testing connection..."
+    if git ls-remote origin HEAD &>/dev/null; then
+        log_success "GitHub remote configured successfully!"
+    else
+        log_warn "Could not connect to remote. Please verify credentials and repository exists."
+        log_warn "You can manually fix with: cd $DOTFILES_DIR && git remote set-url origin <url>"
+    fi
+    
+    # Set upstream branch
+    git branch -M main 2>/dev/null || true
+    
+    echo
+}
+
 # Main
 main() {
+    case "${1:-}" in
+        --setup-github)
+            setup_github_remote
+            exit 0
+            ;;
+    esac
+    
     log_info "Installing dotfiles sync daemon..."
     
     check_deps || exit 1
@@ -119,6 +197,7 @@ main() {
     echo "  systemctl --user logs -f dotfiles-sync.service  # Follow logs"
     echo "  $SYNC_SCRIPT --status                           # Show sync status"
     echo "  $SYNC_SCRIPT --sync                             # Manual sync"
+    echo "  $SYNC_SCRIPT --setup-github                     # Setup GitHub remote"
     echo
     echo "Config: ~/.config/dotfiles-sync.conf"
     echo "Logs: journalctl --user -u dotfiles-sync.service -f"
