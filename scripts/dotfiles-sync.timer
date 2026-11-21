@@ -1,0 +1,12 @@
+[Unit]
+Description=Monthly dotfiles push timer
+Requires=dotfiles-sync.service
+
+[Timer]
+# Run on 1st of every month at 3:00 AM
+OnCalendar=*-*-01 03:00:00
+Persistent=true
+RandomizedDelaySec=1h
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,152 @@
+[user]
+    name = YOUR_NAME
+    email = YOUR_EMAIL@domain.com
+    signingkey = YOUR_GPG_KEY_ID
+
+[core]
+    editor = nvim
+    pager = less -R
+    autocrlf = input
+    safecrlf = true
+    excludesfile = ~/.config/git/ignore
+    fsmonitor = true
+    preloadindex = true
+
+[init]
+    defaultBranch = main
+
+[pull]
+    rebase = true
+    ff = only
+
+[push]
+    default = simple
+    followTags = true
+    autoSetupRemote = true
+
+[fetch]
+    prune = true
+    pruneTags = true
+
+[merge]
+    conflictstyle = diff3
+    ff = only
+
+[rebase]
+    autoStash = true
+    updateRefs = true
+
+[diff]
+    algorithm = histogram
+    colorMoved = default
+    renames = true
+
+[log]
+    date = short
+    decorate = short
+
+[status]
+    short = true
+    branch = true
+
+[branch]
+    sort = -committerdate
+
+[tag]
+    sort = -v:refname
+
+[gpg]
+    format = ssh
+
+[commit]
+    gpgsign = false
+    verbose = true
+
+[alias]
+    # Basics
+    co = checkout
+    cb = checkout -b
+    br = branch
+    ba = branch -a
+    bd = branch -d
+    bD = branch -D
+    st = status -sb
+    ss = status
+    ci = commit
+    cm = commit -m
+    ca = commit -am
+    amend = commit --amend --no-edit
+    fixup = commit --fixup
+    squash = commit --squash
+
+    # Logging
+    lg = log --oneline --graph --decorate -20
+    lga = log --oneline --graph --decorate --all -30
+    ll = log --pretty=format:"%C(yellow)%h%Creset %C(blue)%ad%Creset %C(green)%an%Creset %s" --date=short
+    ls = log --pretty=format:"%C(yellow)%h%Creset %s" --graph
+    lds = log --pretty=format:"%C(yellow)%h%Creset %ad %s" --date=short --graph
+
+    # Diff
+    d = diff
+    dc = diff --cached
+    dw = diff --word-diff
+    ds = diff --stat
+
+    # Staging
+    aa = add -A
+    ap = add -p
+    unstage = reset HEAD --
+
+    # Stashing
+    stl = stash list
+    sts = stash save
+    stp = stash pop
+    std = stash drop
+
+    # Remote
+    fe = fetch --prune
+    pl = pull --rebase
+    ps = push
+    psf = push --force-with-lease
+    pt = push --tags
+
+    # Cleanup
+    clean = clean -fd
+    prune = remote prune origin
+
+    # Utility
+    root = rev-parse --show-toplevel
+    ignored = ls-files --others --ignored --exclude-standard
+    assume = update-index --assume-unchanged
+    unassume = update-index --no-assume-unchanged
+    ignored = ls-files --others -i --exclude-standard
+
+[color]
+    ui = auto
+    diff = auto
+    status = auto
+    branch = auto
+    grep = auto
+    pager = true
+
+[color "diff"]
+    meta = yellow bold
+    frag = magenta bold
+    old = red bold
+    new = green bold
+
+[color "status"]
+    added = green
+    changed = yellow
+    untracked = cyan
+    branch = magenta bold
+    nobranch = red bold
+
+[credential]
+    helper = cache --timeout=3600
+
+[filter "lfs"]
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
+    process = git-lfs filter-process
+    required = true

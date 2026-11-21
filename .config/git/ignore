@@ -1,0 +1,113 @@
+# OS
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.*.swp
+.vim/
+*.orig
+
+# Build
+build/
+dist/
+target/
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.dylib
+*.a
+*.lib
+
+# Dependencies
+node_modules/
+vendor/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+*.egg-info/
+*.egg
+dist/
+build/
+
+# Package managers
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+Cargo.lock
+go.sum
+composer.lock
+Gemfile.lock
+
+# IDE/Tools
+*.log
+*.tmp
+*.temp
+.cache/
+*.sqlite
+*.sqlite3
+*.db
+
+# Testing
+coverage/
+.nyc_output/
+*.prof
+
+# Misc
+*.tar.gz
+*.zip
+*.rar
+*.7z
+*.tgz
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.tfplan
+.terraform/
+
+# Kubernetes
+*.kubeconfig
+kubeconfig
+
+# Secrets (never commit!)
+*.secret
+secrets.*
+credentials.*
+*.env
+*.env.local
+*.env.*.local

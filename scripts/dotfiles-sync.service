@@ -1,0 +1,28 @@
+[Unit]
+Description=Dotfiles Auto-Sync Daemon
+Documentation=https://github.com/yourusername/dotfiles
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/home/clumzzy/Projects/Dotfiles/scripts/sync-dotfiles.sh --watch
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=dotfiles-sync
+
+# Security
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=%h/.local/state %h/.config/dotfiles-sync.conf %h/Projects/Dotfiles
+
+# Environment
+Environment=DOTFILES_DIR=%h/Projects/Dotfiles
+Environment=HOME=%h
+
+[Install]
+WantedBy=default.target
