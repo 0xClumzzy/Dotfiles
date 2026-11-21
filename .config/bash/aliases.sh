@@ -431,13 +431,13 @@ install_tools() {
     case $dtype in
         redhat)
             if command -v dnf >/dev/null 2>&1; then
-                sudo dnf install -y multitail tree zoxide trash-cli fzf bash-completion fastfetch eza bat fd-find ripgrep
+                sudo dnf install -y multitail tree zoxide trash-cli fzf bash-completion # fastfetch eza bat fd-find ripgrep
             else
-                sudo yum install -y multitail tree zoxide trash-cli fzf bash-completion fastfetch
+                sudo yum install -y multitail tree zoxide trash-cli fzf bash-completion # fastfetch
             fi ;;
-        suse)    sudo zypper install -y multitail tree zoxide trash-cli fzf bash-completion fastfetch ;;
-        debian)  sudo apt-get update && sudo apt-get install -y multitail tree zoxide trash-cli fzf bash-completion fastfetch eza bat fd-find ripgrep ;;
-        arch)    sudo pacman -S --needed multitail tree zoxide trash-cli fzf bash-completion fastfetch eza bat fd ripgrep ;;
+        suse)    sudo zypper install -y multitail tree zoxide trash-cli fzf bash-completion # fastfetch ;;
+        debian)  sudo apt-get update && sudo apt-get install -y multitail tree zoxide trash-cli fzf bash-completion # fastfetch eza bat fd-find ripgrep ;;
+        arch)    sudo pacman -S --needed multitail tree zoxide trash-cli fzf bash-completion # fastfetch eza bat fd ripgrep ;;
         slackware) echo "No install support for Slackware" ;;
         *)       echo "Unknown distribution" ;;
     esac

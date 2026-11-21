@@ -1,16 +1,17 @@
 # aesthetics
-background-opacity = 0.72
-background-blur=22
+background-opacity = 0.70
+background-blur=20
 background=#000000
 foreground=#cdd6f4
 
 # typography - icursive fonts as default with cursive italics
 font-family = "Meslo iCursive S12"
 font-style-italic = "Meslo iCursive S12 Italic"
-font-size=16
+font-size=18
 font-thicken=true
 font-thicken-strength=1
 adjust-cell-height=1
+
 
 #copy on select
 scrollback-limit = 100000

@@ -80,9 +80,19 @@ if command -v atuin >/dev/null 2>&1; then
     eval "$(atuin init bash)"
 fi
 
-# ---- Fastfetch on startup ----
-if command -v fastfetch >/dev/null 2>&1; then
-    fastfetch
+# ---- Fastfetch on startup (commented out) ----
+# if command -v fastfetch >/dev/null 2>&1; then
+#     fastfetch
+# fi
+
+# ---- Run clx (circumflex) once on first terminal ----
+if command -v clx >/dev/null 2>&1; then
+    CLX_RAN_FILE="$HOME/.cache/clx_ran"
+    if [ ! -f "$CLX_RAN_FILE" ]; then
+        mkdir -p "$(dirname "$CLX_RAN_FILE")"
+        touch "$CLX_RAN_FILE"
+        clx
+    fi
 fi
 
 # ---- Local/private overrides (not tracked in git) ----

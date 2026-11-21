@@ -310,7 +310,7 @@ install_packages() {
     local packages=(
         "zsh" "git" "curl" "wget" "unzip"
         "neovim" "starship" "zoxide" "fzf" "eza" "bat" "fd" "ripgrep"
-        "trash-cli" "fastfetch" "thefuck" "direnv" "atuin"
+        "trash-cli" "# fastfetch" "thefuck" "direnv" "atuin"
         "lazygit" "docker" "go" "rust" "nodejs" "python3" "python3-pip" "pipx"
     )
 

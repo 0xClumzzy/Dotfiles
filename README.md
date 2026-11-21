@@ -309,7 +309,7 @@ PUSH_TIME="03:00"
 ### Ghostty (`~/.config/ghostty/config`)
 
 ```ini
-background-opacity = 0.82
+background-opacity = 0.72
 background-blur = 22
 background = #000000
 font-family = "JetBrainsMono Nerd Font"
@@ -342,16 +342,16 @@ copy-on-select = clipboard
 
 ```bash
 # Arch/Manjaro
-sudo pacman -S zsh git curl wget unzip neovim starship zoxide fzf eza bat fd ripgrep trash-cli fastfetch thefuck direnv atuin lazygit docker go rust nodejs python3 python3-pip pipx inotify-tools
+sudo pacman -S zsh git curl wget unzip neovim starship zoxide fzf eza bat fd ripgrep trash-cli # fastfetch thefuck direnv atuin lazygit docker go rust nodejs python3 python3-pip pipx inotify-tools
 
 # Debian/Ubuntu
-sudo apt install zsh git curl wget unzip neovim starship zoxide fzf eza bat fd-find ripgrep trash-cli fastfetch thefuck direnv atuin lazygit docker.io golang rustc cargo nodejs npm python3 python3-pip pipx inotify-tools
+sudo apt install zsh git curl wget unzip neovim starship zoxide fzf eza bat fd-find ripgrep trash-cli # fastfetch thefuck direnv atuin lazygit docker.io golang rustc cargo nodejs npm python3 python3-pip pipx inotify-tools
 
 # Fedora
-sudo dnf install zsh git curl wget unzip neovim starship zoxide fzf eza bat fd-find ripgrep trash-cli fastfetch thefuck direnv atuin lazygit docker golang rust cargo nodejs npm python3 python3-pip pipx inotify-tools
+sudo dnf install zsh git curl wget unzip neovim starship zoxide fzf eza bat fd-find ripgrep trash-cli # fastfetch thefuck direnv atuin lazygit docker golang rust cargo nodejs npm python3 python3-pip pipx inotify-tools
 
 # macOS (Homebrew)
-brew install zsh git curl wget neovim starship zoxide fzf eza bat fd ripgrep trash fastfetch thefuck direnv atuin lazygit docker go rust node python3 pipx inotify-tools
+brew install zsh git curl wget neovim starship zoxide fzf eza bat fd ripgrep trash # fastfetch thefuck direnv atuin lazygit docker go rust node python3 pipx inotify-tools
 ```
 
 ### Optional
