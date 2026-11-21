@@ -84,6 +84,12 @@ git_commit() {
 git_push() {
     cd "$DOTFILES_DIR" || return 1
     
+    # Skip if no remote configured
+    if ! git remote get-url "$REMOTE_NAME" &>/dev/null; then
+        log "No remote '$REMOTE_NAME' configured, skipping push"
+        return 0
+    fi
+    
     log "Pushing to $REMOTE_NAME/$BRANCH..."
     
     if git push "$REMOTE_NAME" "$BRANCH" >> "$LOG_FILE" 2>&1; then
@@ -97,6 +103,12 @@ git_push() {
 
 git_pull() {
     cd "$DOTFILES_DIR" || return 1
+    
+    # Skip if no remote configured
+    if ! git remote get-url "$REMOTE_NAME" &>/dev/null; then
+        log "No remote '$REMOTE_NAME' configured, skipping pull"
+        return 0
+    fi
     
     log "Pulling from $REMOTE_NAME/$BRANCH..."
     
