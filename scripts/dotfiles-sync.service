@@ -6,7 +6,7 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/home/clumzzy/Projects/Dotfiles/scripts/sync-dotfiles.sh --watch
+ExecStart=%h/Projects/Dotfiles/scripts/sync-dotfiles.sh --watch
 Restart=always
 RestartSec=10
 StandardOutput=journal
