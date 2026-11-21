@@ -47,7 +47,7 @@ dotfiles/
 
 ```bash
 # Clone
-git clone https://github.com/YOURUSER/dotfiles.git ~/Projects/Dotfiles
+git clone https://github.com/0xClumzzy/Dotfiles.git 
 cd ~/Projects/Dotfiles
 
 # Interactive component installer (recommended)
