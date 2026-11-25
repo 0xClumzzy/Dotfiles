@@ -46,8 +46,8 @@ dotfiles/
 ## 🚀 Quick Start
 
 ```bash
-# Clone
-git clone https://github.com/0xClumzzy/Dotfiles.git 
+# Clone (with wallpapers submodule)
+git clone --recursive https://github.com/0xClumzzy/Dotfiles.git 
 cd ~/Projects/Dotfiles
 
 # Interactive component installer (recommended)
@@ -79,6 +79,14 @@ cd ~/Projects/Dotfiles
 ./scripts/install-fonts.sh -d -i 0,2,3
 
 # Just dotfiles
+./install.sh --minimal --non-interactive
+```
+
+### Forgot `--recursive`?
+
+```bash
+git submodule update --init --recursive
+# Then re-run installer:
 ./install.sh --minimal --non-interactive
 ```
 
@@ -141,6 +149,21 @@ After installing, set your terminal font to one of the installed families:
 - **Alacritty/Kitty/WezTerm**: Use font name from `fc-list | grep -i nerd`
 
 **Enable italic** in terminal settings for cursive comments/keywords.
+
+---
+
+## 🖼️ Wallpapers
+
+Wallpapers are included as a git submodule from [0xClumzzy/wallpapers](https://github.com/0xClumzzy/wallpapers).
+
+```bash
+# Installed automatically by install.sh to ~/Pictures/Wallpapers/
+./install.sh --minimal
+
+# Or clone manually
+git submodule update --init --recursive
+cp -r wallpaper/* ~/Pictures/Wallpapers/
+```
 
 ---
 

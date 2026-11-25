@@ -294,6 +294,27 @@ install_scripts() {
     log_success "Scripts installed"
 }
 
+# Initialize git submodules and install wallpapers
+install_wallpapers() {
+    log_info "Initializing git submodules..."
+
+    cd "$DOTFILES_DIR"
+    git submodule update --init --recursive 2>/dev/null || true
+
+    # Install wallpapers if submodule exists
+    local wallpaper_src="$DOTFILES_DIR/wallpaper"
+    local wallpaper_dst="$HOME/Pictures/Wallpapers"
+
+    if [ -d "$wallpaper_src" ] && [ "$(ls -A "$wallpaper_src" 2>/dev/null | grep -v '^\.git$')" ]; then
+        log_info "Installing wallpapers to $wallpaper_dst..."
+        mkdir -p "$wallpaper_dst"
+        cp -r "$wallpaper_src/"* "$wallpaper_dst/" 2>/dev/null || true
+        log_success "Wallpapers installed to $wallpaper_dst"
+    else
+        log_warn "Wallpaper submodule not found or empty at $wallpaper_src"
+    fi
+}
+
 # Install system packages (optional)
 install_packages() {
     if [ "$MINIMAL" = true ]; then
@@ -364,6 +385,7 @@ main() {
     install_nvim
     install_micro
     install_scripts
+    install_wallpapers
 
     if [ "$MINIMAL" != true ]; then
         install_packages
